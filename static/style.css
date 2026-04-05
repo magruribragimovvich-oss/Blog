@@ -1,0 +1,181 @@
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: sans-serif;
+
+    /* 🔥 background image */
+    background: url("/static/bg.jpg") no-repeat center/cover;
+}
+
+/* overlay (dark effect for readability) */
+body::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 0;
+}
+
+/* container */
+.container {
+    position: relative;
+    z-index: 1;
+
+    display: flex;
+    flex-direction: column;
+    /* 🔥 vertical */
+    gap: 20px;
+
+    /* When returning from hidden (modal closing): delay animation */
+    transition: opacity 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) 0.15s,
+                transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) 0.15s;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.container.hidden {
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+    /* When hiding (modal opening): animate immediately without delay */
+    transition: opacity 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) 0s,
+                transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) 0s;
+}
+
+/* blog cards */
+.card {
+    width: 400px;
+    /* 🔥 kengroq */
+    padding: 20px;
+
+    border-radius: 25px;
+
+    cursor: pointer;
+    color: white;
+    font-size: 18px;
+    font-weight: 500;
+
+    backdrop-filter: blur(5px) saturate(120%);
+    -webkit-backdrop-filter: blur(5px) saturate(120%);
+    background:
+        radial-gradient(120% 120% at 0% 0%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-top: 1px solid rgba(255, 255, 255, 0.4);
+    border-left: 1px solid rgba(255, 255, 255, 0.4);
+
+    box-shadow:
+        0 10px 25px rgba(0, 0, 0, 0.1),
+        inset 1px 1px 2px rgba(255, 255, 255, 0.2);
+
+    /* floating setup */
+    scale: 1;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    animation: floatCard 6s ease-in-out infinite;
+}
+
+/* Stagger the delays for a natural, suspended array of glass cards */
+.card:nth-child(1) { animation-delay: 0s; }
+.card:nth-child(2) { animation-delay: 1.5s; }
+.card:nth-child(3) { animation-delay: 3s; }
+.card:nth-child(4) { animation-delay: 0.5s; }
+.card:nth-child(5) { animation-delay: 2s; }
+.card:nth-child(odd) { animation-duration: 7s; }
+
+.card:hover {
+    scale: 1.02;
+    box-shadow:
+        0 15px 35px rgba(0, 0, 0, 0.15),
+        inset 1px 1px 4px rgba(255, 255, 255, 0.3);
+    background:
+        radial-gradient(120% 120% at 0% 0%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.5);
+    border-left: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+@keyframes floatCard {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+/* modal */
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, calc(-50% + 20px));
+    opacity: 0;
+    visibility: hidden;
+
+    width: 500px;
+    max-height: 70vh;
+    overflow-y: auto;
+
+    padding: 30px;
+    border-radius: 30px;
+
+    backdrop-filter: blur(5px) saturate(120%);
+    -webkit-backdrop-filter: blur(5px) saturate(120%);
+    background:
+        radial-gradient(120% 120% at 0% 0%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-top: 1px solid rgba(255, 255, 255, 0.4);
+    border-left: 1px solid rgba(255, 255, 255, 0.4);
+
+    box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.15),
+        inset 1px 1px 3px rgba(255, 255, 255, 0.2);
+
+    color: white;
+    z-index: 2;
+
+    /* When closing (not active): modal fades out and drops immediately */
+    transition: opacity 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) 0s,
+                transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) 0s,
+                visibility 0.4s 0s;
+}
+
+.modal.active {
+    transform: translate(-50%, -50%);
+    opacity: 1;
+    visibility: visible;
+    /* When opening (active): modal waits for cards to disappear first */
+    transition: opacity 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) 0.15s,
+                transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) 0.15s,
+                visibility 0.5s 0.15s;
+}
+
+.back-btn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    border-radius: 15px;
+    border: none;
+    cursor: pointer;
+
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.02) 100%);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}

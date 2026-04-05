@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        {% for slug, article in articles.items() %}
+            <div class="card" onclick="openPost('{{ slug }}')">
+                {{ article }}
+            </div>
+        {% endfor %}
+    </div>
+
+    <div id="modal" class="modal">
+        <h2 id="title"></h2>
+        <p id="content"></p>
+        <button class="back-btn" onclick="closePost()">Back</button>
+    </div>
+
+    <script>
+    function openPost(slug) {
+        fetch(`/blog/${slug}`)
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('title').innerText = data.title;
+                document.getElementById('content').innerText = data.content;
+                document.getElementById('modal').classList.add('active');
+                document.querySelector('.container').classList.add('hidden');
+            });
+    }
+
+    function closePost() {
+        document.getElementById('modal').classList.remove('active');
+        document.querySelector('.container').classList.remove('hidden');
+    }
+</script>
+</body>
+</html>
